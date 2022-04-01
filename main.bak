@@ -1,0 +1,3 @@
+#lang racket
+; main
+require "cardsSet.rkt"

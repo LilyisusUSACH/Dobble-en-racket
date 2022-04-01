@@ -1,0 +1,5 @@
+#lang racket
+
+; main
+(require "cardsSet.rkt")
+(require "game.rkt")
