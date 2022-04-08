@@ -1,2 +1,72 @@
 #lang racket
-; cardsSet
+#lang racket
+
+; TDA CARTA
+; Representacion
+; Carta = CartaVacia | lista de N simbolos
+
+; Constructor
+(define cartaVacia null)
+(define cartaInicial list)
+; Pertenencia
+(define cartaVacia? null?)
+
+; Selectores
+
+; Modificadores
+(define addSymbol (lambda (C x)
+                  (cons C x)))
+
+; TDA CARTAS
+; representacion
+; Cartas = CartasVacia | Lista de N carta
+
+; Constructor
+(define cartasVacias null)
+; Pertenencia
+(define cartasVacias? null?)
+;selectores
+(define getnCard (lambda (Cs n)
+                   (list-ref Cs n)))
+                   
+;modificadores
+(define addCard (lambda (C Cs)
+                  (cons C Cs)))
+
+(define card (lambda (carta i n)
+               (if (not (= i (+ 2 n)))
+                        (card (addSymbol i carta) (+ 1 i) n)
+                        carta)))
+
+(define cartaN (lambda (carta k j n)
+                 (if (not(= k (+ 1 n)))
+                     (cartaN (addSymbol (+(* n j)(+ k 1)) carta) (+ k 1) j n)
+                     carta)))
+
+(define cartas-n (lambda (tope j cartas)
+                   (if (not(= (+ 1 tope) j))
+                       (cartas-n tope (+ j 1) (addCard (cartaN (addSymbol 1 cartaVacia) 1 j tope) cartas))
+                       cartas
+                   )))
+
+(define cartaNN_int (lambda (carta i j k n)
+                      (if (not(= k (+ 1 n)))
+                          (cartaNN_int (addSymbol (+ n 2 (* n (- k 1)) (remainder (- (+(* (- i 1) (- k 1)) j) 1) n)) carta)
+                                  i j (+ 1 k) n)
+                          carta)))
+
+(define cartasNN (lambda(cartas i j n)
+                   (if (not(= j (+ 1 n)))
+                       (cartasNN (addCard (cartaNN_int(addSymbol (+ 1 i) cartaVacia) i j 1 n) cartas) i (+ j 1) n)
+                        cartas)))
+
+
+(define cartas-nn (lambda (tope i cartas)
+                    (if (not (= i (+ 1 tope)))
+                        (cartas-nn tope (+ 1 i)(cartasNN cartas i 1 tope))
+                        cartas)))
+
+(define setCard (lambda (n)
+                  (cartas-nn n 1
+                       (cartas-n n 1
+                            (addCard (card cartaVacia 1 n) cartasVacias )))))
