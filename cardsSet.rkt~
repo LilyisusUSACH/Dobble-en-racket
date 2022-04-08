@@ -65,55 +65,7 @@
                         (cartas-nn tope (+ 1 i)(cartasNN cartas i 1 tope))
                         cartas)))
 
-(define setCard (lambda (n)
+(define cardSet (lambda (n)
                   (cartas-nn n 1
                        (cartas-n n 1
                             (addCard (card cartaVacia 1 n) cartasVacias )))))
-
-; FUNCION QUE VERIFICA SI N ES PRIMO
-(define es_primo (lambda (n)
-                   (define is_primo (lambda (i n)
-                     (if (= i (- n 1))
-                         #f
-                         (if (= (remainder n i) 0)
-                             #t
-                             (is_primo (+ 1 i) n)))))
-                   
-                   (not(is_primo 2 n))))
-                         
-
-
-(define cardSet (lambda (simbolos n cantCard)
-                  (if (null? simbolos)
-                      (setCard n)
-                      (linkear simbolos (setCard n)))))
-
-(define linkear(lambda (simbolos cartas)
-                 (if (not ( = (length simbolos) (length cartas)))
-                     null
-                     (asociar simbolos cartas cartasVacias))))
-
-(define eachCard (lambda (simbolos carta newCarta)
-                   (if (null? carta)
-                       newCarta
-                       (eachCard simbolos (cdr carta) (addSymbol (list-ref simbolos (- (car carta) 1)) newCarta)))))
-                   
-(define asociar (lambda (simbolos cartas newCards)
-                  (if (null? cartas)
-                      newCards
-                      (asociar simbolos (cdr cartas) (addCard (eachCard simbolos (car cartas) cartaVacia) newCards)))))
-
-; Falta terminar de implementar esto
-(define cardSet->string(lambda (Cs)
-                         (map (lambda (L) (string-join
-                                           (addCard "\n" (addCard "C" (map (lambda (C) (number->string C)) L)))
-                                                   ))Cs)))
-
-(define m 2147483647)
-(define a 1103515245)
-(define c 12345)
-
-(define randomFn (lambda (xn)
-                   (modulo (+ (* a xn) c) m)
-                 )
-)
