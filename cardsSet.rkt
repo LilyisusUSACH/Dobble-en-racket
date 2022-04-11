@@ -27,7 +27,7 @@
 ;selectores
 (define getnCard (lambda (Cs n)
                    (list-ref Cs n)))
-                   
+(define largo length)                
 ;modificadores
 (define addCard (lambda (C Cs)
                   (cons C Cs)))
@@ -71,19 +71,23 @@
                             (addCard (card cartaVacia 1 n) cartasVacias )))))
 
 ; FUNCION QUE VERIFICA SI N ES PRIMO
-(define es_primo (lambda (n)
-                   (define is_primo (lambda (i n)
-                     (if (= i (- n 1))
-                         #f
-                         (if (= (remainder n i) 0)
-                             #t
-                             (is_primo (+ 1 i) n)))))
-                   
-                   (not(is_primo 2 n))))
+(define is_primo (lambda (i n)
+                                          (if (= i (- n 1))
+                                              #f
+                                              (if (= (remainder n i) 0)
+                                                  #t
+                                                  (is_primo (+ 1 i) n)))))
+(define es_primo? (lambda (n)
+                   (if (or (= n 1) (= n 2) (= n 3))
+                       #t
+                       (not(is_primo 2 n))
+                       )
+                   ))
                          
 
+; ARMANDO LA FUNCION PRINCIPAL
 
-(define cardSet (lambda (simbolos n cantCard)
+(define cardSet (lambda (simbolos n)
                   (if (null? simbolos)
                       (setCard n)
                       (linkear simbolos (setCard n)))))
@@ -109,11 +113,31 @@
                                            (addCard "\n" (addCard "C" (map (lambda (C) (number->string C)) L)))
                                                    ))Cs)))
 
-(define m 2147483647)
-(define a 1103515245)
-(define c 12345)
+; FUNCION Q "ALEATORIZA" LAS CARTAS
+(define rand (lambda (L)
+               (define randomize(lambda (L newL i)
+                 (if (not (null? L))
+                     (if (or (=(remainder i 2)0)) ;probe ocupando el randomFn pero no
+                         (randomize (cdr L) (addSymbol (car L) newL) (+ i 1))
+                         (randomize (cdr L) (addSymbol (car L) (reverse newL)) (+ i 1))
+                         )
+                     newL
+                 )))
+               (randomize L cartasVacias 0)))
 
-(define randomFn (lambda (xn)
-                   (modulo (+ (* a xn) c) m)
-                 )
-)
+; Funcion que corte las cartas en n elementos
+(define cut (lambda (L n)
+             (if (or (null? L) (> n (largo L)))
+                 null
+                 (cortar L n)
+                 )))
+
+(define cortar (lambda (L n)
+                 (if (= n (largo L))
+                     L
+                     (if (= n (largo (cdr L)))
+                         (cdr L)
+                         (cortar (cdr L)  n)))))
+                     
+(define newCardSet (lambda (simbolos n cantCard)
+                     (cut (rand (cardSet simbolos n)) cantCard)))
