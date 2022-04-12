@@ -129,7 +129,9 @@
 (define cut (lambda (L n)
              (if (or (null? L) (> n (largo L)))
                  null
-                 (cortar L n)
+                 (if (< 0 n)
+                     (cortar L n)
+                     L)
                  )))
 
 (define cortar (lambda (L n)
@@ -140,4 +142,32 @@
                          (cortar (cdr L)  n)))))
                      
 (define newCardSet (lambda (simbolos n cantCard)
-                     (cut (rand (cardSet simbolos n)) cantCard)))
+                     (cut (rand (cardSet simbolos (- n 1))) cantCard)))
+
+(define findTotalCards (lambda (carta)
+                         (define n (largo carta))
+                         (+(* n n) n 1)))
+
+(define requiredElements (lambda (carta)
+                         (define n (largo carta))
+                         (+(* n n) n 1)))
+
+
+(define esta-en (lambda (cartas carta)
+                  (if (null? cartas)
+                      #f
+                      (or (equal? (car cartas) carta) (esta-en (cdr cartas) carta))
+                      )))
+
+ ; Missing cards completo pero falta implementacion a simbolos xd, preguntar
+(define missingCards (lambda (cartas)
+                      (if (= (largo cartas) (findTotalCards (car cartas)))
+                          null
+                          (filter (lambda (x)
+                                    (if (esta-en cartas x)
+                                        #f
+                                        #t
+                                        ))
+                                    (newCardSet null (largo (car cartas)) -1))
+                       )))
+; FALTA SOLO LA FUNCION DOBBLE? consultar al profesor
