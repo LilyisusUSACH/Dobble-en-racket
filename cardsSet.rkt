@@ -195,6 +195,8 @@
                     
 
 (define dobble? (lambda (setcartas)
-                  (coinciden (car setcartas) (car (newCardSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
-                  ))
+                  (if (null? (car setcartas))
+                      #f
+                      (coinciden (car setcartas) (car (newCardSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
+                  )))
                   
