@@ -24,9 +24,12 @@
 (define cartasVacias null)
 ; Pertenencia
 (define cartasVacias? null?)
+
 ;selectores
+(define getfirstCard caar)
 (define getnCard (lambda (Cs n)
-                   (list-ref Cs n)))
+                   (list-ref (car Cs) n)))
+
 (define largo length)                
 ;modificadores
 (define addCard (lambda (C Cs)
@@ -88,9 +91,10 @@
 ; ARMANDO LA FUNCION PRINCIPAL
 
 (define cardSet (lambda (simbolos n)
-                  (if (null? simbolos)
-                      (setCard n)
-                      (linkear simbolos (setCard n)))))
+                      (if (null? simbolos)
+                          (setCard n)
+                          (linkear simbolos (setCard n)))
+                      ))
 
 (define linkear(lambda (simbolos cartas)
                  (if (not ( = (length simbolos) (length cartas)))
@@ -108,10 +112,17 @@
                       (asociar simbolos (cdr cartas) (addCard (eachCard simbolos (car cartas) cartaVacia) newCards)))))
 
 ; Falta terminar de implementar esto
-(define cardSet->string(lambda (Cs)
-                         (map (lambda (L) (string-join
-                                           (addCard "\n" (addCard "C" (map (lambda (C) (number->string C)) L)))
-                                                   ))Cs)))
+
+(define string-eachcard (lambda (setcartas i string)
+                          (if (not (null? setcartas))
+                              (string-eachcard (cdr setcartas) (+ 1 i)
+                               (string-append "C" (~a i) ": " (string-join (map (lambda(x) (string-append (~a x) " -")) (car setcartas))) "\n" string))
+                              string
+                          )))
+
+(define cardSet->string(lambda (setcartas)
+                         (string-eachcard (car setcartas) 0 "")
+                         ))
 
 ; FUNCION Q "ALEATORIZA" LAS CARTAS
 (define rand (lambda (L)
@@ -129,7 +140,7 @@
 (define cut (lambda (L n)
              (if (or (null? L) (> n (largo L)))
                  null
-                 (if (< 0 n)
+                 (if (<= 0 n)
                      (cortar L n)
                      L)
                  )))
@@ -142,10 +153,12 @@
                          (cortar (cdr L)  n)))))
                      
 (define newCardSet (lambda (simbolos n cantCard)
-                     (cut (rand (cardSet simbolos (- n 1))) cantCard)))
+                     (if (not (= n 0))
+                         (cons (cut (rand (cardSet simbolos (- n 1))) cantCard) simbolos)
+                         null)))
 
 (define findTotalCards (lambda (carta)
-                         (define n (largo carta))
+                         (define n (- (largo carta) 1))
                          (+(* n n) n 1)))
 
 (define requiredElements (lambda (carta)
@@ -159,15 +172,29 @@
                       (or (equal? (car cartas) carta) (esta-en (cdr cartas) carta))
                       )))
 
- ; Missing cards completo pero falta implementacion a simbolos xd, preguntar
+ ; Missing cards completo pero falta implementacion a simbolos xd, preguntar; COMPLETADO
 (define missingCards (lambda (cartas)
-                      (if (= (largo cartas) (findTotalCards (car cartas)))
+                      (if (= (largo (car cartas)) (findTotalCards (car (car cartas))))
                           null
                           (filter (lambda (x)
-                                    (if (esta-en cartas x)
+                                    (if (esta-en (car cartas) x)
                                         #f
                                         #t
                                         ))
-                                    (newCardSet null (largo (car cartas)) -1))
+                                    (car (newCardSet (cdr cartas) (largo (car (car cartas))) -1)))
                        )))
 ; FALTA SOLO LA FUNCION DOBBLE? consultar al profesor
+
+(define error '((("C" "C")) "A" "B" "C"))
+
+(define coinciden (lambda (setcartas completesetcartas bool)
+                    (if (not (null? setcartas))
+                        (coinciden (cdr setcartas) completesetcartas (and (list? (member (car setcartas) completesetcartas)) bool))
+                        bool
+                    )))
+                    
+
+(define dobble? (lambda (setcartas)
+                  (coinciden (car setcartas) (car (newCardSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
+                  ))
+                  
