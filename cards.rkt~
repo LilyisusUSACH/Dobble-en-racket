@@ -4,12 +4,11 @@
 (provide getfirstCard)
 (provide getnCard)
 (provide largo)
-(provide addCardToCards)
+(provide addCard)
 
 ; TDA CARTAS
 ; representacion
-; Cartas = CartasVacia | Lista con cartas
-;              null    | carta X Cartas
+; Cartas = CartasVacia | Lista de N carta
 
 ; Constructor
 (define cartasVacias null)
@@ -23,5 +22,5 @@
 
 (define largo length)                
 ;modificadores
-(define addCardToCards (lambda (C Cs)
+(define addCard (lambda (C Cs)
                   (cons C Cs)))

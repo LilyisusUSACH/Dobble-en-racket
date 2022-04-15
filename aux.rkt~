@@ -1,7 +1,6 @@
 #lang racket
 
 (provide es_primo?)
-(provide esta-en)
 
 ; AUXILIAR PARA CARDSET
 
@@ -18,9 +17,3 @@
                         (not(is_primo 2 n))
                         )
                     ))
-
-(define esta-en (lambda (cartas carta)
-                  (if (null? cartas)
-                      #f
-                      (or (set=? (car cartas) carta) (esta-en (cdr cartas) carta))
-                      )))

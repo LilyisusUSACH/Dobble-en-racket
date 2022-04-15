@@ -1,0 +1,10 @@
+#lang racket
+; TDA player
+
+; null| Nombre X Cartas
+; constructor
+(define newPlayer null)
+; selectores
+(define getName car)
+(define getPlayerCards cdr)
+

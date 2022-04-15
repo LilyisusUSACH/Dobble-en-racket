@@ -1,0 +1,9 @@
+#lang racket
+; TDA PLAYERS
+; null| Player X Players
+
+; Constructor
+(define players list)
+; Selectores
+(define firstPlayer car)
+(define anotherPlayers cdr)
