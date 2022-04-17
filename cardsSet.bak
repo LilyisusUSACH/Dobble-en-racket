@@ -2,7 +2,7 @@
 
 (require "cards.rkt")
 (require "card.rkt")
-(require "auxi.rkt")
+(require "aux.rkt")
 (provide setCard)
 (provide emptyCardsSet)
 (provide newCardSet)
@@ -13,8 +13,7 @@
 (provide requiredElements)
 (provide cardSet->string)
 (provide missingCards)
-(provide addCard)
-
+  
 ; TDA CardSet
 ; null | Cartas x list (de simbolos)
 
@@ -58,11 +57,10 @@
                                        (if (null? simbolos)
                                            (setCard n)
                                            (linkear simbolos (setCard n)))
-                                       ))      
+                                       ))
+                     
                      (if (not (= n 0))
-                         ;(if (null? simbolos)
-                             ;(cons (cut (rand (cardSet simbolos (- n 1))) cantCard) (simbolos-hasta-n (+(* (- n 1) (- n 1)) (- n 1) 1) null))
-                             (cons (cut (rand (cardSet simbolos (- n 1))) cantCard) simbolos);)
+                         (cons (cut (rand (cardSet simbolos (- n 1))) cantCard) simbolos)
                          null)))
 
 
@@ -77,7 +75,12 @@
                                        newCards
                                        (asociar simbolos (cdr cartas) (addCardToCards (eachCard simbolos (car cartas) cartaVacia) newCards)))))
 
-                 (define rellenarSimbolos (lambda (simbolos n-simbolos)          
+                 (define rellenarSimbolos (lambda (simbolos n-simbolos)
+                                            (define simbolos-hasta-n(lambda (n resultado)
+                                                                      (if (= n 0)
+                                                                          resultado
+                                                                          (simbolos-hasta-n (- n 1) (cons n resultado)))))
+                                                                                      
                                             (simbolos-hasta-n n-simbolos simbolos)))
                  
                  (if (not (>= (length simbolos) (length cartas) ))
@@ -173,17 +176,12 @@
 
 (define error '(((1 2)) "A" "B" "C"))
 ; Punto 18
-; TIENE UN ERROR pero solo es en casos muy particulares, donde se inicia con un cardset
-; sin cartas pero con simbolos, esto genera una union de simbolos que trae muchos problemas
-; no se soluciona, ya que es un caso muy particular y seria muy raro que se diera el caso
-; ejemplo de error (addCard (addCard (newCardSet '("A" "B" "C" "D") 3 0) '(7 6 1)) '(1 2 3))
-; 
 
 (define addCard (lambda (setcartas carta)
                   (define setConCarta (lambda (setcartas carta)
                                         (if (esta-en (getCards setcartas) carta)
                                             setcartas
-                                           (cons (addCardToCards carta (getCards setcartas)) (set-union (getSymbols setcartas) (reverse carta)))))) ;Hacerlo sin union
+                                            (cons (addCardToCards carta (getCards setcartas)) (set-union (getSymbols setcartas) carta))))) ;Hacerlo sin union
 
                   (define resultado (setConCarta setcartas carta))
                   

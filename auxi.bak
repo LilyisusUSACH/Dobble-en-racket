@@ -2,7 +2,7 @@
 
 (provide es_primo?)
 (provide esta-en)
-(provide simbolos-hasta-n)
+
 ; AUXILIAR PARA CARDSET
 
 (define es_primo? (lambda (n)
@@ -24,8 +24,3 @@
                       #f
                       (or (set=? (car cartas) carta) (esta-en (cdr cartas) carta))
                       )))
-
-(define simbolos-hasta-n(lambda (n resultado)
-                          (if (= n 0)
-                              resultado
-                              (simbolos-hasta-n (- n 1) (append resultado (list n))))))

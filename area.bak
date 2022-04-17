@@ -1,0 +1,23 @@
+#lang racket
+; TDA area de juego ?
+; lista de cartas
+
+; null| Card x Area
+
+; contructor
+(define gameAreaVacia null)
+
+; Modificador
+(define addCardToArea (lambda (c Area)
+                        (cons C Area)))
+
+; Selector
+
+(define firstArea car)
+(define restoArea cdr)
+
+(define isSymbolInArea? (lambda (simbolo area)
+                          (if (null? area)
+                              #f
+                              (or (member? simbolo area) (isSymbolInArea? simbolo (restoArea area)))
+                          )))

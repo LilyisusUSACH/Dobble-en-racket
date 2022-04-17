@@ -6,8 +6,6 @@
 (provide anotherPlayers)
 (provide addPlayer)
 (provide isPlayer?)
-(provide cantidadPlayers)
-(provide getnPlayer)
 
 ; TDA PLAYERS
 ; null| Player X Players
@@ -18,14 +16,10 @@
 ; Selectores
 (define firstPlayer car)
 (define anotherPlayers cdr)
-(define cantidadPlayers length)
-(define getnPlayer (lambda (pls n)
-                     (list-ref pls n)))
 ; Modificadores
 
 (define addPlayer (lambda (nombre pls)
-                    (cons (newPlayer nombre) pls)
-                    ))
+                    (cons (newPlayer nombre) pls)))
 
 ; otros
 (define isPlayer? (lambda (nombre pls) 
