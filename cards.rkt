@@ -15,6 +15,15 @@
 
 ; Constructor
 (define cartasVacias null)
+
+(define addCardToCards (lambda (C Cs)
+                  (cons C Cs)))
+
+(define addCardFinalToCards (lambda (C Cs)
+                             (if (null? Cs)
+                                 (cons C null)
+                                 (cons (car Cs) (addCardFinalToCards C (cdr Cs))))))
+
 ; Pertenencia
 (define cartasVacias? null?)
 
@@ -27,11 +36,5 @@
 
 (define largo length)                
 ;modificadores
-(define addCardToCards (lambda (C Cs)
-                  (cons C Cs)))
 
-(define addCardFinalToCards (lambda (C Cs)
-                             (if (null? Cs)
-                                 (cons C null)
-                                 (cons (car Cs) (addCardFinalToCards C (cdr Cs))))))
                        

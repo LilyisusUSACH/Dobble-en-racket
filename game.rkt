@@ -38,7 +38,7 @@
 ; Estado si esta "Terminado" no se puede seguir jugando.
 
 (define game(lambda (n_players setcartas modo randomfn)
-              (if (and (positive? n_players) (dobble? setcartas) (procedure? modo)(procedure? randomfn))
+              (if (and (positive? n_players) (dobble? setcartas) (procedure? modo) (procedure? randomfn))
                   (list gameAreaVacia setcartas 0 n_players playersVacio "No iniciado" modo randomfn)
                   gameVacio
                   )))
@@ -104,7 +104,7 @@
 
 ; Tengo el set,saco las 2 primeras cartas, eligo un item, paso.
 (define stackMode (lambda (juego funcion)
-                    (define corte (cut (rand (getCards (getSetCartas juego))) 2))
+                    (define corte (cut (rand (getCards (getSetCartas juego)) randomFn (getTurn juego) ) 2))
                     (if (null? funcion)
                         (if (and (or (cartasVacias? corte) (cartasVacias? (getCards (getSetCartas juego)))) (cartasVacias? (getArea juego)))
                             (updateStatus "Finalizado" juego) ; ademas elegir ganador y eso, despues vere
@@ -116,16 +116,18 @@
                         (funcion juego 0)
                         )))
 
-(define empyHandsStackMode (lambda (juego funcion)
-                             (define corte (lambda (x j)
-                                             (cut (rand (getCards (getSetCartas j))) x)))
-                             (define repartirCartas (lambda (juego setcartas players area cantidad)
-                                                      (if (null? players)
-                                                          juego
-                                                          
-                                                      
+(define corte (lambda (x j)
+                (cut (rand (getCards (getSetCartas j)) randomFn (getTurn j) )x)))
+
+(define repartirCartas (lambda (players cantidad juego newPlayers)
+                         (if (not (null? newPlayers))
+                             (repartirCartas (addCardsToPlayer (getPlayerName (firstPlayer newPlayers)) (corte cantidad juego) players) cantidad
+                                             (updateSet (set-subtract (getCards (getSetCartas juego)) (corte cantidad juego) )juego) (anotherPlayers newPlayers))
+                             players)))
+
+(define empyHandsStackMode (lambda (juego funcion)     
                              (if (and (null? funcion) (equal? (getStatus juego) "No iniciado"))
-                                 (round (/ (numCards (getSetCartas juego)) (+ 1 (cantidadPlayers(getPlayers juego))) ))
+                                 (floor (/ (numCards (getSetCartas juego)) (+ 1 (cantidadPlayers(getPlayers juego))) ))
                                  null
                                  )))
 
@@ -160,7 +162,7 @@
 
  
                    
-(define game1(game 4 (cardsSet (list "A" "B" "C" "D" "E" "F" "G") 3 -1) stackMode -))
+(define game1(game 4 (cardsSet (list "A" "B" "C" "D" "E" "F" "G") 3 -1 randomFn) stackMode -))
 (define game2 (stackMode game1 null))
 (define game3 (register "lulu" (register "lala" game2)))
 (define game4 (play game3 (spotIt "A")))

@@ -6,8 +6,9 @@
 (provide addSymbol)
 
 ; TDA CARTA
+
 ; Representacion
-; Carta = CartaVacia | lista de N simbolos
+; Carta = null | lista de N simbolos
 
 ; Constructor
 (define cartaVacia null)

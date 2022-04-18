@@ -8,6 +8,7 @@
 (provide simbolos-hasta-n)
 (provide rand)
 (provide cut)
+(provide randomFn)
 
 ; AUXILIAR PARA CARDSET
 
@@ -36,16 +37,16 @@
                               resultado
                               (simbolos-hasta-n (- n 1) (append resultado (list n))))))
 
-(define rand (lambda (L)
-               (define randomize(lambda (L newL i)
+(define rand (lambda (L fnrandom j)
+               (define randomize(lambda (L newL i fn)
                                   (if (not (null? L))
-                                      (if (or (=(remainder i 2)0))
-                                          (randomize (cdr L) (addSymbol (car L) newL) (+ i 1))
-                                          (randomize (cdr L) (addSymbol (car L) (reverse newL)) (+ i 1))
+                                      (if (or (=(remainder (fn i) 2)0))
+                                          (randomize (cdr L) (addSymbol (car L) newL) (+ i 1) fn)
+                                          (randomize (cdr L) (addSymbol (car L) (reverse newL)) (+ i 1) fn)
                                           )
                                       newL
                                       )))
-               (randomize L cartasVacias 0)))
+               (randomize L cartasVacias j fnrandom)))
 
 (define cut (lambda (L n)
               (define cortar (lambda (L n)
@@ -61,3 +62,13 @@
                       (cortar L n)
                       L)
                   )))
+
+; Extra
+(define m 2147483647)
+(define a 1103515245)
+(define c 12345)
+ 
+(define randomFn (lambda (xn)
+                   (modulo (+ (* a xn) c) m)
+                 )
+)

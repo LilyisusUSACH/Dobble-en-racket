@@ -19,7 +19,7 @@
 (provide addCardToTop)
 
 ; TDA CardSet
-; null | Cartas x list (de simbolos)
+; emptyCardsSet | Cartas x list (de simbolos)
 
 ; Constructor
 
@@ -38,7 +38,7 @@
 ;Tipo Recursión: Cola
 
 (define setCard(lambda (n)
-                 (define card (lambda (carta i n)
+                 (define 1card (lambda (carta i n)
                                 (if (not (= i (+ 2 n)))
                                     (1card (addSymbol i carta) (+ 1 i) n)
                                     carta)))
@@ -76,14 +76,14 @@
 ;Dom: Lista X Z+ X Z+ e {} X funcion
 ;Rec: cardsSet
 
-(define cardsSet (lambda (simbolos n cantCard)
+(define cardsSet (lambda (simbolos n cantCard fnrandom)
                      (define cardSet (lambda (simbolos n)
                                        (if (null? simbolos)
                                            (setCard n)
                                            (linkear simbolos (setCard n)))
                                        ))      
                      (if (not (= n 0))
-                         (cons (cut (rand (cardSet simbolos (- n 1))) cantCard) simbolos)
+                         (cons (cut (rand (cardSet simbolos (- n 1)) fnrandom 1) cantCard) simbolos)
                          null)))
 
 
@@ -120,7 +120,7 @@
 
                   (if (null? (car setcartas))
                       #f
-                      (coinciden (car setcartas) (car (cardsSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
+                      (coinciden (car setcartas) (car (cardsSet (cdr setcartas) (largo (car (car setcartas))) -1 randomFn)) #t)
                       )))
                                              
 

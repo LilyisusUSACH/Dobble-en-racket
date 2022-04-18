@@ -10,6 +10,7 @@
 (provide getnPlayer)
 (provide addCardToPlayer)
 (provide addCardsToPlayer)
+(provide addPlayerToFinal)
 ; TDA PLAYERS
 ; null| Player X Players
 
