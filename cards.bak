@@ -1,12 +1,10 @@
 #lang racket
 
 (provide cartasVacias)
-(provide cartasVacias?)
 (provide getfirstCard)
 (provide getnCard)
 (provide largo)
 (provide addCardToCards)
-(provide addCardFinalToCards)
 
 ; TDA CARTAS
 ; representacion
@@ -20,8 +18,6 @@
 
 ;selectores
 (define getfirstCard caar)
-(define getAnotherCards cadr)
-
 (define getnCard (lambda (Cs n)
                    (list-ref Cs n)))
 
@@ -29,9 +25,3 @@
 ;modificadores
 (define addCardToCards (lambda (C Cs)
                   (cons C Cs)))
-
-(define addCardFinalToCards (lambda (C Cs)
-                             (if (null? Cs)
-                                 (cons C null)
-                                 (cons (car Cs) (addCardFinalToCards C (cdr Cs))))))
-                       

@@ -3,7 +3,10 @@
 (require "cards.rkt")
 (provide newPlayer)
 (provide getPlayerName)
+(provide getPlayerScore)
 (provide getPlayerCards)
+(provide addPlayerCard)
+(provide setPlayerScore)
 
 ; TDA player
 
@@ -18,7 +21,10 @@
 
 ; Modificadores
 (define setPlayerScore (lambda (player newScore)
-                         (cons (getPlayerName player) newScore  (getPlayerCards player))))
+                         (list (getPlayerName player) newScore (getPlayerCards player))))
 
 (define setPlayerCards (lambda (player cards)
                          (cons (getPlayerName player) (getPlayerScore player) cards)))
+
+(define addPlayerCard (lambda (player card)
+                         (list (getPlayerName player) (getPlayerScore player) (addCardToCards card (getPlayerCards player)))))

@@ -6,6 +6,7 @@
 (require "player.rkt")
 (require "players.rkt")
 (require "area.rkt")
+(require "auxi.rkt")
 
 ; Para los turnos hace un modulo del n° jugadores
 
@@ -83,14 +84,15 @@
                                          (getPlayers juego) (getStatus juego) (getMode juego) (getRandom juego))
                         null
                         )))
-
-(define updateAreaSet (lambda (newArea newSetCartas juego)
-                        (if (not (null? newSetCartas))
-                            (game_to_modify newArea newSetCartas (getTurn juego) (getMaxPlayers juego)
-                                            (getPlayers juego) (getStatus juego) (getMode juego) (getRandom juego))
-                            null
-                            )))
-
+(define updateStatus (lambda (newStatus juego)
+                    (if (not (null? newStatus))
+                        (game_to_modify  (getArea juego) (getSetCartas juego) (getTurn juego) (getMaxPlayers juego)
+                                         (getPlayers juego) newStatus  (getMode juego) (getRandom juego))
+                        null
+                        )))
+(define updatePlayers (lambda (newPls juego)
+                        (game_to_modify  (getArea juego) (getSetCartas juego) (getTurn juego) (getMaxPlayers juego)
+                                         newPls (getStatus juego)  (getMode juego) (getRandom juego))))
 ; Otros
 (define whoseTurnIsIt? (lambda (juego)
                          (if (not (= 0 (cantidadPlayers (getPlayers juego))))
@@ -101,14 +103,64 @@
                              null)))
 
 ; Tengo el set,saco las 2 primeras cartas, eligo un item, paso.
-;(define stackMode (lambda (juego funcion)
-;                    (if (= funcion null)
+(define stackMode (lambda (juego funcion)
+                    (define corte (cut (rand (getCards (getSetCartas juego))) 2))
+                    (if (null? funcion)
+                        (if (and (or (cartasVacias? corte) (cartasVacias? (getCards (getSetCartas juego)))) (cartasVacias? (getArea juego)))
+                            (updateStatus "Finalizado" juego) ; ademas elegir ganador y eso, despues vere
+                            (if (cartasVacias? (getArea juego))
+                                (updateStatus "Jugando" (updateSet (cons (set-subtract (getCards (getSetCartas juego)) corte)
+                                                 (getSymbols (getSetCartas juego))) (updateArea corte juego)))
+                                juego
+                            ))
+                        (funcion juego 0)
+                        )))
 
-(define pass (lambda (juego)
-               (if (equal? (getArea juego) gameAreaVacia)
-                   juego
-                   (pass  (updateAreaSet (restoArea (getArea juego)) (addCard (getSetCartas juego) (firstArea (firstArea juego))) juego))
-                   )))
+(define empyHandsStackMode (lambda (juego funcion)
+                             (define corte (lambda (x j)
+                                             (cut (rand (getCards (getSetCartas j))) x)))
+                             (define repartirCartas (lambda (juego setcartas players area cantidad)
+                                                      (if (null? players)
+                                                          juego
+                                                          
+                                                      
+                             (if (and (null? funcion) (equal? (getStatus juego) "No iniciado"))
+                                 (round (/ (numCards (getSetCartas juego)) (+ 1 (cantidadPlayers(getPlayers juego))) ))
+                                 null
+                                 )))
+
+(define pass (lambda (juego condi)
+               (if (= 0 condi)
+                   (if (equal? (getArea juego) gameAreaVacia)
+                       (updateTurn (+ 1 (getTurn juego)) juego)
+                       (pass (game_to_modify  (restoArea (getArea juego)) (addCardToFinal (getSetCartas juego) (firstArea (firstArea juego)))
+                                              (getTurn juego) (getMaxPlayers juego) (getPlayers juego) (getStatus juego) (getMode juego) (getRandom juego)) condi)
+                       )
+                   (if (= 1 condi)
+                       condi
+                       null)
+                   )))                   
+
+(define spotIt (lambda (simbolo)
+                 (define funcion2 (lambda (simbolo juego condi)
+                                    (if (= 0 condi)
+                                        (if (isSymbolInAreaCards? simbolo (getArea juego))
+                                            (pass (updateArea null (updatePlayers (addCardsToPlayer (whoseTurnIsIt? juego) (getArea juego) (getPlayers juego)) juego)) condi)
+                                            (pass juego condi))
+                                        (if (= 1 condi)
+                                            condi
+                                            null)
+                                        )))
+                 (curry funcion2 simbolo)))
+
+
+(define play (lambda (juego action)
+               ((getMode juego) juego action)
+  ))
+
+ 
                    
-                    
-                                                  
+(define game1(game 4 (newCardSet (list "A" "B" "C" "D" "E" "F" "G") 3 -1) stackMode -))
+(define game2 (stackMode game1 null))
+(define game3 (register "lulu" (register "lala" game2)))
+(define game4 (play game3 (spotIt "A")))
