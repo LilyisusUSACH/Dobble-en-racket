@@ -41,7 +41,7 @@
                              (cartas-n n 1
                                        (addCard (card cartaVacia 1 n) cartasVacias)))))
 
-(define newCardSet (lambda (simbolos n cantCard)
+(define cardsSet (lambda (simbolos n cantCard)
                      (define cardSet (lambda (simbolos n)
                                        (if (null? simbolos)
                                            (setCard n)
@@ -111,7 +111,7 @@
 
                   (if (null? (car setcartas))
                       #f
-                      (coinciden (car setcartas) (car (newCardSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
+                      (coinciden (car setcartas) (car (cardsSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
                       )))
 
 ; Otros
@@ -150,7 +150,7 @@
                                          #f
                                          #t
                                          ))
-                                   (car (newCardSet (cdr cartas) (largo (car (car cartas))) -1)))
+                                   (car (cardsSet (cdr cartas) (largo (car (car cartas))) -1)))
                            )))
 
 (define error '(((1 2)) "A" "B" "C"))

@@ -1,6 +1,6 @@
 #lang racket
 
-(require "card.rkt")
+(require "cardsSet.rkt")
 (require "cards.rkt")
 (require "cardsSet.rkt")
 (require "player.rkt")
@@ -160,7 +160,7 @@
 
  
                    
-(define game1(game 4 (newCardSet (list "A" "B" "C" "D" "E" "F" "G") 3 -1) stackMode -))
+(define game1(game 4 (cardsSet (list "A" "B" "C" "D" "E" "F" "G") 3 -1) stackMode -))
 (define game2 (stackMode game1 null))
 (define game3 (register "lulu" (register "lala" game2)))
 (define game4 (play game3 (spotIt "A")))

@@ -5,7 +5,7 @@
 (require "aux.rkt")
 (provide setCard)
 (provide emptyCardsSet)
-(provide newCardSet)
+(provide cardsSet)
 (provide dobble?)
 (provide getCards)
 (provide getSymbols)
@@ -52,7 +52,7 @@
                             (cartas-n n 1
                                       (addCardToCards (card cartaVacia 1 n) cartasVacias)))))
 
-(define newCardSet (lambda (simbolos n cantCard)
+(define cardsSet (lambda (simbolos n cantCard)
                      (define cardSet (lambda (simbolos n)
                                        (if (null? simbolos)
                                            (setCard n)
@@ -99,7 +99,7 @@
 
                   (if (null? (car setcartas))
                       #f
-                      (coinciden (car setcartas) (car (newCardSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
+                      (coinciden (car setcartas) (car (cardsSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
                       )))
 
 ; Selectores
@@ -169,7 +169,7 @@
                                                    #f
                                                    #t
                                                    ))
-                                             (car (newCardSet (cdr cartas) (largo (car (car cartas))) -1))) (getSymbols cartas))
+                                             (car (cardsSet (cdr cartas) (largo (car (car cartas))) -1))) (getSymbols cartas))
                                )
                            null
                            )))

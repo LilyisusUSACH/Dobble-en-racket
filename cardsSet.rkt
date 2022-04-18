@@ -5,7 +5,7 @@
 (require "auxi.rkt")
 (provide setCard)
 (provide emptyCardsSet)
-(provide newCardSet)
+(provide cardsSet)
 (provide dobble?)
 (provide getCards)
 (provide getSymbols)
@@ -22,12 +22,25 @@
 ; null | Cartas x list (de simbolos)
 
 ; Constructor
+
+;Nombre Función: emptyCardsSet
+;Descripción:  crea una version vacia del cardsSet
+;Dom: - no recibe nada
+;Rec: CardsSet
+
 (define emptyCardsSet (cons cartasVacias null))
+
+;Nombre Función: setCard
+;Descripción: Crea segun un algoritmo internamente un "Cards"
+;             Que despues servira para ser un set de dobble
+;Dom: Z+
+;Rec: Cards
+;Tipo Recursión: Cola
 
 (define setCard(lambda (n)
                  (define card (lambda (carta i n)
                                 (if (not (= i (+ 2 n)))
-                                    (card (addSymbol i carta) (+ 1 i) n)
+                                    (1card (addSymbol i carta) (+ 1 i) n)
                                     carta)))
                  (define cartas-n (lambda (tope j cartas)
                                     (define cartaN (lambda (carta k j n)
@@ -54,9 +67,16 @@
                                          cartas)))
                  (cartas-nn n 1
                             (cartas-n n 1
-                                      (addCardToCards (card cartaVacia 1 n) cartasVacias)))))
+                                      (addCardToCards (1card cartaVacia 1 n) cartasVacias)))))
 
-(define newCardSet (lambda (simbolos n cantCard)
+
+;Nombre Función: setCard
+;Descripción: Define los limites del cardsSet para despues llamar
+;              A la funcion que lo crea, ademas lo recorta y 
+;Dom: Lista X Z+ X Z+ e {} X funcion
+;Rec: cardsSet
+
+(define cardsSet (lambda (simbolos n cantCard)
                      (define cardSet (lambda (simbolos n)
                                        (if (null? simbolos)
                                            (setCard n)
@@ -100,7 +120,7 @@
 
                   (if (null? (car setcartas))
                       #f
-                      (coinciden (car setcartas) (car (newCardSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
+                      (coinciden (car setcartas) (car (cardsSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
                       )))
                                              
 
@@ -143,7 +163,7 @@
                                                    #f
                                                    #t
                                                    ))
-                                             (car (newCardSet (cdr cartas) (largo (car (car cartas))) -1))) (getSymbols cartas))
+                                             (car (cardsSet (cdr cartas) (largo (car (car cartas))) -1))) (getSymbols cartas))
                                )
                            null
                            )))
