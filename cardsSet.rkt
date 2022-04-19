@@ -12,7 +12,8 @@
 (provide numCards)
 (provide nthCard)
 (provide requiredElements)
-(provide cardSet->string)
+(provide findTotalCards)
+(provide cardsSet->string)
 (provide missingCards)
 (provide addCard)
 (provide addCardToFinal)
@@ -73,7 +74,7 @@
 ;Nombre Función: setCard
 ;Descripción: Define los limites del cardsSet para despues llamar
 ;              A la funcion que lo crea, ademas lo recorta y 
-;Dom: Lista X Z+ X Z+ e {} X funcion
+;Dom: Lista X Z+ X Z+ + {0} X funcion
 ;Rec: cardsSet
 
 (define cardsSet (lambda (simbolos n cantCard fnrandom)
@@ -87,6 +88,11 @@
                          null)))
 
 
+;Nombre Función: Linkear
+;Descripción: Si hay simbolos, asociada cada simbolo a un numero dentro de las cartas
+;Dom: list de simbolos, cards
+;Rec: cards
+;Tipo Recursión: Cola
 
 (define linkear(lambda (simbolos cartas)
                  (define asociar (lambda (simbolos cartas newCards)
@@ -109,6 +115,11 @@
 ; errores cuando hay simbolos que autocompletar | sets no creados, si no que insertados
 ; si hay tiempo arreglar
 
+;Nombre Función: Dobble?
+;Descripción: comprueba si es un dobble valido
+;Dom: cardsSet
+;Rec: boolean, #t o #f
+
 (define dobble? (lambda (setcartas)
                   (define coinciden (lambda (setcartas completesetcartas bool)
                                       (if (not (null? setcartas))
@@ -125,24 +136,66 @@
                                              
 
 ; Selectores
+
+;Nombre Función: getCards
+;Descripción: devuelve las cards de un cardsSet
+;Dom: cardsSet
+;Rec: cards
+
 (define getCards car)
+
+;Nombre Función: getSymbols
+;Descripción: devuelve una lista de elementos
+;Dom: cardsSet
+;Rec: list
+
 (define getSymbols cdr)
+
+;Nombre Función: numCards
+;Descripción: Calcular el total de cartas que tiene un cardsSet
+;Dom: cardsSet
+;Rec: Z+
 (define numCards (lambda (setcartas)
                    (largo (getCards setcartas))))
+
+;Nombre Función: nthCard
+;Descripción: devuelve la carta que esta en una posicion n de un cardsSet
+;Dom: cardsSet
+;Rec: card
+
 (define nthCard (lambda (n cardSet)
                   (getnCard (getCards cardSet) n)))
 
 ; Otros
 
+;Nombre Función: findTotalCards
+;Descripción: Calcular el total de cartas que deberia tener un cardsSet completo
+;             a partir de una carta
+;Dom: card
+;Rec: Z+
+
 (define findTotalCards (lambda (carta)
                          (define n (- (largo carta) 1))
                          (+(* n n) n 1)))
 
+;Nombre Función: findTotalCards
+;Descripción: Calcular el total de elementos que deberia tener un cardsSet completo
+;             a partir de una carta
+;Dom: card
+;Rec: Z+
+
 (define requiredElements (lambda (carta)
-                           (define n (largo carta))
+                           (define n (- (largo carta) 1))
                            (+(* n n) n 1)))
 
-(define cardSet->string(lambda (setcartas)
+;Nombre Función: cardSet->string
+;Descripción: Devuelve un formato en string de un cardsSet
+;             Para posteriormente ser usado con un display
+;Dom: cardsSet
+;Rec: String
+;Tipo Recursión: Cola
+
+(define cardsSet->string(lambda (setcartas)
                          (define string-eachcard
                            (lambda (setcartas i string)
                              (if (not (null? setcartas))
@@ -154,6 +207,12 @@
                          (string-eachcard (car setcartas) 0 "")
                          ))
 
+;Nombre Función: missingCards
+;Descripción: Devuelve las cartas faltantes para que un cardsSet
+;             Sea un cardsSet completo
+;Dom: cardsSet
+;Rec: cardsSet
+
 (define missingCards (lambda (cartas)
                        (if (not(null? (getCards cartas)))
                            (if (= (largo (car cartas)) (findTotalCards (car (car cartas))))
@@ -163,7 +222,7 @@
                                                    #f
                                                    #t
                                                    ))
-                                             (car (cardsSet (cdr cartas) (largo (car (car cartas))) -1))) (getSymbols cartas))
+                                             (car (cardsSet (cdr cartas) (largo (car (car cartas))) -1 randomFn))) (getSymbols cartas))
                                )
                            null
                            )))
@@ -172,11 +231,17 @@
 
 ; Punto 18
 
+;Nombre Función: addCard
+;Descripción: añade una carta a un set, verificando que cumpla con ser dobble
+;Dom: cardsSet X card
+;Rec: cardsSet
+;Tipo Recursión: Cola
+
 (define addCard (lambda (setcartas carta)
                   (define setConCarta (lambda (setcartas carta)
                                         (if (esta-en (getCards setcartas) carta)
                                             setcartas
-                                           (cons (addCardToCards carta (getCards setcartas)) (set-union carta (reverse (getSymbols setcartas) )))))) ;Hacerlo sin union
+                                           (cons (addCardToCards carta (getCards setcartas)) (set-union carta (reverse (getSymbols setcartas))))))) ;Hacerlo sin union
 
                   (define resultado (setConCarta setcartas carta))
                   
@@ -185,7 +250,20 @@
                       setcartas)
                   ))
 
+;Nombre Función: addCardToTop
+;Descripción: añade una card en el top del cardsSet sin verificar
+; ya que se usara con cartas que estan verificadas, ya que fueron
+; Sacadas directamente del set creado
+;Dom: cardsSet X card
+;Rec: cardsSet
+
 (define addCardToTop (lambda (setcartas carta)
                          (cons (addCardToCards carta (getCards setcartas) ) (getSymbols setcartas))))
+
+;Nombre Función: addCardToFinal
+;Descripción: añade una card al final de un cardsSet igual que la anterior
+;Dom: cardsSet X card
+;Rec: cardsSet
+
 (define addCardToFinal (lambda (setcartas carta)
-                         (cons (addCardFinalToCards carta (getCards setcartas) ) (getSymbols setcartas))))
+                         (cons (addCardFinalToCards carta (getCards setcartas)) (getSymbols setcartas))))

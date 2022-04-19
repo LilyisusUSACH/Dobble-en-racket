@@ -1,7 +1,14 @@
 #lang racket
 
+(require "card.rkt")
+(require "cards.rkt")
+
 (provide es_primo?)
 (provide esta-en)
+(provide simbolos-hasta-n)
+(provide rand)
+(provide cut)
+(provide randomFn)
 
 ; AUXILIAR PARA CARDSET
 
@@ -24,3 +31,44 @@
                       #f
                       (or (set=? (car cartas) carta) (esta-en (cdr cartas) carta))
                       )))
+
+(define simbolos-hasta-n(lambda (n resultado)
+                          (if (= n 0)
+                              resultado
+                              (simbolos-hasta-n (- n 1) (append resultado (list n))))))
+
+(define rand (lambda (L fnrandom j)
+               (define randomize(lambda (L newL i fn)
+                                  (if (not (null? L))
+                                      (if (or (=(remainder (fn i) 2)0))
+                                          (randomize (cdr L) (addSymbol (car L) newL) (+ i 1) fn)
+                                          (randomize (cdr L) (addSymbol (car L) (reverse newL)) (+ i 1) fn)
+                                          )
+                                      newL
+                                      )))
+               (randomize L cartasVacias j fnrandom)))
+
+(define cut (lambda (L n)
+              (define cortar (lambda (L n)
+                               (if (= n (largo L))
+                                   L
+                                   (if (= n (largo (cdr L)))
+                                       (cdr L)
+                                       (cortar (cdr L)  n)))))
+              
+              (if (or (null? L) (> n (largo L)))
+                  null
+                  (if (<= 0 n)
+                      (cortar L n)
+                      L)
+                  )))
+
+; Extra
+(define m 2147483647)
+(define a 1103515245)
+(define c 12345)
+ 
+(define randomFn (lambda (xn)
+                   (modulo (+ (* a xn) c) m)
+                 )
+)

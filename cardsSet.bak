@@ -2,28 +2,45 @@
 
 (require "cards.rkt")
 (require "card.rkt")
-(require "aux.rkt")
+(require "auxi.rkt")
 (provide setCard)
 (provide emptyCardsSet)
 (provide cardsSet)
 (provide dobble?)
 (provide getCards)
 (provide getSymbols)
+(provide numCards)
 (provide nthCard)
 (provide requiredElements)
 (provide cardSet->string)
 (provide missingCards)
-  
+(provide addCard)
+(provide addCardToFinal)
+(provide addCardToTop)
+
 ; TDA CardSet
-; null | Cartas x list (de simbolos)
+; emptyCardsSet | Cartas x list (de simbolos)
 
 ; Constructor
+
+;Nombre Función: emptyCardsSet
+;Descripción:  crea una version vacia del cardsSet
+;Dom: - no recibe nada
+;Rec: CardsSet
+
 (define emptyCardsSet (cons cartasVacias null))
 
+;Nombre Función: setCard
+;Descripción: Crea segun un algoritmo internamente un "Cards"
+;             Que despues servira para ser un set de dobble
+;Dom: Z+
+;Rec: Cards
+;Tipo Recursión: Cola
+
 (define setCard(lambda (n)
-                 (define card (lambda (carta i n)
+                 (define 1card (lambda (carta i n)
                                 (if (not (= i (+ 2 n)))
-                                    (card (addSymbol i carta) (+ 1 i) n)
+                                    (1card (addSymbol i carta) (+ 1 i) n)
                                     carta)))
                  (define cartas-n (lambda (tope j cartas)
                                     (define cartaN (lambda (carta k j n)
@@ -50,17 +67,23 @@
                                          cartas)))
                  (cartas-nn n 1
                             (cartas-n n 1
-                                      (addCardToCards (card cartaVacia 1 n) cartasVacias)))))
+                                      (addCardToCards (1card cartaVacia 1 n) cartasVacias)))))
 
-(define cardsSet (lambda (simbolos n cantCard)
+
+;Nombre Función: setCard
+;Descripción: Define los limites del cardsSet para despues llamar
+;              A la funcion que lo crea, ademas lo recorta y 
+;Dom: Lista X Z+ X Z+ e {} X funcion
+;Rec: cardsSet
+
+(define cardsSet (lambda (simbolos n cantCard fnrandom)
                      (define cardSet (lambda (simbolos n)
                                        (if (null? simbolos)
                                            (setCard n)
                                            (linkear simbolos (setCard n)))
-                                       ))
-                     
+                                       ))      
                      (if (not (= n 0))
-                         (cons (cut (rand (cardSet simbolos (- n 1))) cantCard) simbolos)
+                         (cons (cut (rand (cardSet simbolos (- n 1)) fnrandom 1) cantCard) simbolos)
                          null)))
 
 
@@ -75,18 +98,16 @@
                                        newCards
                                        (asociar simbolos (cdr cartas) (addCardToCards (eachCard simbolos (car cartas) cartaVacia) newCards)))))
 
-                 (define rellenarSimbolos (lambda (simbolos n-simbolos)
-                                            (define simbolos-hasta-n(lambda (n resultado)
-                                                                      (if (= n 0)
-                                                                          resultado
-                                                                          (simbolos-hasta-n (- n 1) (cons n resultado)))))
-                                                                                      
+                 (define rellenarSimbolos (lambda (simbolos n-simbolos)          
                                             (simbolos-hasta-n n-simbolos simbolos)))
                  
                  (if (not (>= (length simbolos) (length cartas) ))
                      (asociar (rellenarSimbolos simbolos (- (length cartas) (length simbolos))) cartas cartasVacias) ; MUCHO CUIDADO CON ESTO
                      (asociar simbolos cartas cartasVacias))))
 ; Pertenencia
+
+; errores cuando hay simbolos que autocompletar | sets no creados, si no que insertados
+; si hay tiempo arreglar
 
 (define dobble? (lambda (setcartas)
                   (define coinciden (lambda (setcartas completesetcartas bool)
@@ -99,8 +120,9 @@
 
                   (if (null? (car setcartas))
                       #f
-                      (coinciden (car setcartas) (car (cardsSet (cdr setcartas) (largo (car (car setcartas))) -1)) #t)
+                      (coinciden (car setcartas) (car (cardsSet (cdr setcartas) (largo (car (car setcartas))) -1 randomFn)) #t)
                       )))
+                                             
 
 ; Selectores
 (define getCards car)
@@ -109,34 +131,6 @@
                    (largo (getCards setcartas))))
 (define nthCard (lambda (n cardSet)
                   (getnCard (getCards cardSet) n)))
-
-; FUNCION Q "ALEATORIZA" LAS CARTAS
-(define rand (lambda (L)
-               (define randomize(lambda (L newL i)
-                                  (if (not (null? L))
-                                      (if (or (=(remainder i 2)0))
-                                          (randomize (cdr L) (addSymbol (car L) newL) (+ i 1))
-                                          (randomize (cdr L) (addSymbol (car L) (reverse newL)) (+ i 1))
-                                          )
-                                      newL
-                                      )))
-               (randomize L cartasVacias 0)))
-
-; Funcion que corte las cartas en n elementos
-(define cut (lambda (L n)
-              (define cortar (lambda (L n)
-                               (if (= n (largo L))
-                                   L
-                                   (if (= n (largo (cdr L)))
-                                       (cdr L)
-                                       (cortar (cdr L)  n)))))
-              
-              (if (or (null? L) (> n (largo L)))
-                  null
-                  (if (<= 0 n)
-                      (cortar L n)
-                      L)
-                  )))
 
 ; Otros
 
@@ -175,13 +169,14 @@
                            )))
 
 (define error '(((1 2)) "A" "B" "C"))
+
 ; Punto 18
 
 (define addCard (lambda (setcartas carta)
                   (define setConCarta (lambda (setcartas carta)
                                         (if (esta-en (getCards setcartas) carta)
                                             setcartas
-                                            (cons (addCardToCards carta (getCards setcartas)) (set-union (getSymbols setcartas) carta))))) ;Hacerlo sin union
+                                           (cons (addCardToCards carta (getCards setcartas)) (set-union carta (reverse (getSymbols setcartas) )))))) ;Hacerlo sin union
 
                   (define resultado (setConCarta setcartas carta))
                   
@@ -189,3 +184,8 @@
                       resultado
                       setcartas)
                   ))
+
+(define addCardToTop (lambda (setcartas carta)
+                         (cons (addCardToCards carta (getCards setcartas) ) (getSymbols setcartas))))
+(define addCardToFinal (lambda (setcartas carta)
+                         (cons (addCardFinalToCards carta (getCards setcartas) ) (getSymbols setcartas))))

@@ -1,0 +1,33 @@
+Requerimientos no funcionales
+Autoevaluación - 1
+Lenguaje - 1 
+Versión - 1
+Standard - 1
+No variables - 1
+Documentación - 1
+Dom->Rec - 1
+Organización - 1
+Historial - 1
+Ejemplos - 1
+Prerrequisitos - 1
+
+Requerimientos funcionales
+TDAs - 1
+cardsSet - 1
+dobble? - 0.5
+numCards - 1
+nthCard - 1
+findTotalCards - 1
+requiredElements - 1 
+missingCards - 1
+game - 1
+stackMode - 1
+register - 1
+whoseTurnIsIt - 1
+play - 1
+status - 1
+score - 0
+game->string - 0
+addCard - 0.5
+emptyHandsStackMode - 0.25
+myMode - 0
